@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: sword123
+      MYSQL_DATABASE: sword
+      MYSQL_USER: sword_root
+      MYSQL_PASSWORD: sword123
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - mysql_network
+    restart: always
+
+volumes:
+  mysql_data:
+    driver: local
+
+networks:
+  mysql_network:
+    driver: bridge
