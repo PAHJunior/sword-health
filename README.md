@@ -43,3 +43,5 @@ curl --location 'localhost:3000/sign-up' \
 Other API routes can be found at:
 [API Docs](http://localhost:3000/docs)
 
+### API Documentation Postman
+The Postman collection can be found in the root of the project: `postman_collection.json`
