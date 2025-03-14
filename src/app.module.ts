@@ -7,9 +7,16 @@ import { APP_FILTER, APP_GUARD } from '@nestjs/core';
 import { RolesGuard } from './helpers/guards/roles.guard';
 import { ApiAuthGuard } from './auth/auth.guard';
 import { TaskModule } from './features/task/task.module';
+import { NotifyModule } from './features/notify/notify.module';
 
 @Module({
-  imports: [ConfigModule.forRoot(), AuthModule, UserModule, TaskModule],
+  imports: [
+    ConfigModule.forRoot(),
+    AuthModule,
+    UserModule,
+    TaskModule,
+    NotifyModule,
+  ],
   providers: [
     Logger,
     {

@@ -11,6 +11,8 @@ import { TaskDto } from './dto/task.dto';
 import { UserRoleEnum } from '../user/dto/user-base.dto';
 import { TaskFilterDto } from './dto/task-filter.dto';
 import { TaskUpdateRequestDto } from './dto/task-update.dto';
+import { NotifyService } from '../notify/notify.service';
+import { NotifyTypeEnum } from '../notify/dto/notify-type.enum';
 
 // TODO: Improve, add a filter to avoid code repetition for checking the user's role
 @Injectable()
@@ -18,6 +20,7 @@ export class TaskService {
   public constructor(
     @Inject('TaskRepository')
     private taskRepository: IBaseRepository<TaskEntity>,
+    private notifyService: NotifyService,
   ) {}
 
   public async create(
@@ -34,7 +37,10 @@ export class TaskService {
       userId,
     });
 
-    return this.transformToDto(task);
+    const taskReturn = this.transformToDto(task);
+
+    this.notifyService.sendTaskNotification(taskReturn, NotifyTypeEnum.CREATE);
+    return taskReturn;
   }
 
   public async findAll(
@@ -75,7 +81,10 @@ export class TaskService {
       throw new NotFoundException('Task not found');
     }
 
-    return this.transformToDto(updateTask);
+    const taskReturn = this.transformToDto(updateTask);
+
+    this.notifyService.sendTaskNotification(taskReturn, NotifyTypeEnum.UPDATE);
+    return taskReturn;
   }
 
   public async remove(
@@ -94,6 +103,11 @@ export class TaskService {
       );
     }
 
+    const taskTransform = this.transformToDto(task);
+    this.notifyService.sendTaskNotification(
+      taskTransform,
+      NotifyTypeEnum.DELETE,
+    );
     await this.taskRepository.delete(taskId);
   }
 

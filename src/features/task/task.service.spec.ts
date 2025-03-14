@@ -3,16 +3,21 @@ import { TaskService } from './task.service';
 import { IBaseRepository } from '../../helpers/interfaces/base-repository.interface';
 import { TaskEntity } from './repository/task.entity';
 import { TaskCreateRequestDto } from './dto/task-create.dto';
-import { TaskDto } from './dto/task.dto';
 import { UserRoleEnum } from '../user/dto/user-base.dto';
-import { ForbiddenException, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Logger, NotFoundException } from '@nestjs/common';
 import { TaskStatusEnum } from './dto/task-base.dto';
+import { NotifyModule } from '../notify/notify.module';
+import { ClientProxy } from '@nestjs/microservices';
 
 describe('TaskService', () => {
   let service: TaskService;
   let taskRepository: jest.Mocked<IBaseRepository<TaskEntity>>;
+  let logger: Logger;
+  let clientProxy: ClientProxy;
 
   beforeEach(async () => {
+    logger = { log: jest.fn() } as any;
+    clientProxy = { emit: jest.fn(), connect: jest.fn() } as any;
     const taskRepositoryMock: jest.Mocked<IBaseRepository<TaskEntity>> = {
       create: jest.fn(),
       findAll: jest.fn(),
@@ -22,9 +27,13 @@ describe('TaskService', () => {
     };
 
     const module: TestingModule = await Test.createTestingModule({
+      imports: [NotifyModule],
       providers: [
         TaskService,
+        Logger,
         { provide: 'TaskRepository', useValue: taskRepositoryMock },
+        { provide: Logger, useValue: logger },
+        { provide: 'NOTIFY_SERVICE', useValue: clientProxy },
       ],
     }).compile();
 

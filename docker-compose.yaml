@@ -14,7 +14,17 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
     networks:
-      - mysql_network
+      - sword_network
+    restart: always
+
+  rmq:
+    image: rabbitmq:management
+    container_name: rmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - sword_network
     restart: always
 
 volumes:
@@ -22,5 +32,5 @@ volumes:
     driver: local
 
 networks:
-  mysql_network:
+  sword_network:
     driver: bridge
